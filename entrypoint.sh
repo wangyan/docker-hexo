@@ -20,26 +20,30 @@ cd /opt/hexo
 [ ! -f "/opt/hexo/_config.yml" ] && hexo init .
 [ ! -f "/opt/hexo/deploy.sh" ] && cp /var/lib/hexo/deploy.sh /opt/hexo
 yarn install
+hexo clean
+hexo g
+
+[ -z $WEBHOOK_SECRET ] && WEBHOOK_SECRET=123456
+[ ! -f "/opt/hexo/index.js" ] && cp /var/lib/hexo/index.js /opt/hexo
+sed -i "s/WEBHOOK_SECRET/$WEBHOOK_SECRET/" /opt/hexo/index.js
 
 # Github webhook
 if [ ! -z $GITHUB ];then
   yarn add github-webhook-handler
-  [ -z $WEBHOOK_SECRET ] && WEBHOOK_SECRET=123456
-  [ ! -f "/opt/hexo/github.js" ] && cp /var/lib/hexo/github.js /opt/hexo
-  sed -i "s/WEBHOOK_SECRET/$WEBHOOK_SECRET/" /opt/hexo/github.js
+  sed -i "s/WEBHOOK-HANDLER/github-webhook-handler/" /opt/hexo/index.js
   rm -rf /opt/hexo/source/_posts
   git clone $GITHUB /opt/hexo/source/_posts
-  pm2 start github.js --name hexo
+  pm2 start index.js --name hexo
   /opt/hexo/deploy.sh
 fi
 
 # Gitlab webhook
 if [ ! -z $GITLAB ];then
-  yarn add gitlab-webhook-handler
-  [ ! -f "/opt/hexo/gitlab.js" ] && cp /var/lib/hexo/gitlab.js /opt/hexo
+  yarn add node-gitlab-webhook
+  sed -i "s/WEBHOOK-HANDLER/node-gitlab-webhook/" /opt/hexo/index.js
   rm -rf /opt/hexo/source/_posts
   git clone $GITLAB /opt/hexo/source/_posts
-  pm2 start gitlab.js --name hexo
+  pm2 start index.js --name hexo
   /opt/hexo/deploy.sh
 fi
 

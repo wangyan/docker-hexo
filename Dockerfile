@@ -29,8 +29,7 @@ COPY ./runit/nginx_log.sh /etc/service/nginx/log/run
 RUN mkdir -p /opt/hexo /var/lib/hexo
 WORKDIR /opt/hexo
 
-COPY ./deploy/github.js /var/lib/hexo/github.js
-COPY ./deploy/gitlab.js /var/lib/hexo/gitlab.js
+COPY ./deploy/index.js /var/lib/hexo/index.js
 COPY ./deploy/deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 

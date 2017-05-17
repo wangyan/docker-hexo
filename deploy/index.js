@@ -1,14 +1,6 @@
 var http = require('http')
-var createHandler = require('gitlab-webhook-handler')
-var handler = createHandler({ path: '/webhook'})
-
-function run_cmd(cmd, args, callback) {
-  var spawn = require('child_process').spawn;
-  var child = spawn(cmd, args);
-  var resp = "";
-  child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
-  child.stdout.on('end', function() { callback (resp) });
-}
+var createHandler = require('WEBHOOK-HANDLER')
+var handler = createHandler({ path: '/webhook', secret: 'WEBHOOK_SECRET' })
 
 http.createServer(function (req, res) {
   handler(req, res, function (err) {
@@ -16,8 +8,6 @@ http.createServer(function (req, res) {
     res.end('no such location')
   })
 }).listen(5000)
-
-console.log("Gitlab Hook Server running at http://0.0.0.0:5000");
 
 handler.on('error', function (err) {
     console.error('Error:', err.message)
@@ -29,3 +19,11 @@ handler.on('push', function (event) {
     event.payload.ref);
   run_cmd('sh', ['./deploy.sh'], function(text){ console.log(text) });
 })
+
+function run_cmd(cmd, args, callback) {
+  var spawn = require('child_process').spawn;
+  var child = spawn(cmd, args);
+  var resp = "";
+  child.stdout.on('data', function(buffer) { resp += buffer.toString(); });
+  child.stdout.on('end', function() { callback (resp) });
+}
