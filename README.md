@@ -34,12 +34,13 @@ systemctl start docker.service
 
 ## 三、安装 Hexo
 
-- `IP_OR_DOMAIN` 服务器IP或者域名
-- `GITHUB` github自动发布地址（Gitlab 请使用 `-e GITLAB=http://xxx`）
-- `WEBHOOK_SECRET`  github webhook 密钥 （GitLab 不支持该选项）
+- `IP_OR_DOMAIN` 服务器IP或者域名  
+- `GITHUB` github自动发布地址（Gitlab 请使用 `-e GITLAB=http://xxx`） 
+- 请注意：私有项目仓库地址格式是：`https://username:password@RepoURL`  
+- `WEBHOOK_SECRET`  webhook 密钥
 - `APT_MIRRORS` 使用国内软件源
 
-> 国内主机可将 `idiswy/hexo:latest` 换成 `daocloud.io/wangyan/hexo:latest`
+> 国内主机可将 `idiswy/hexo:latest` 换成 `daocloud.io/wangyan/hexo:latest`  
 > 国内主机可用 `-e APT_MIRRORS=aliyun` 选项，使用国内的镜像源。
 
 
@@ -47,10 +48,21 @@ systemctl start docker.service
 docker run --name hexo \
 -v /opt/hexo:/opt/hexo \
 -p 80:80 \
+-p 443:443 \
 -e IP_OR_DOMAIN=wangyan.org \
--e GITHUB=https://github.com/wangyan/test.git \
+-e GITHUB=https://github.com/wangyan/hexo \
 -e WEBHOOK_SECRET=123456 \
--e APT_MIRRORS=aliyun \
+-d idiswy/hexo:latest
+```
+
+```shell
+docker run --name hexo \
+-v /opt/hexo:/opt/hexo \
+-p 80:80 \
+-p 443:443 \
+-e IP_OR_DOMAIN=wangyan.org \
+-e GITLAB=https://wang_yan:123456@gitlab.com/wang_yan/hexo.git \
+-e WEBHOOK_SECRET=123456 \
 -d idiswy/hexo:latest
 ```
 

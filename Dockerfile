@@ -1,29 +1,33 @@
 FROM idiswy/node:latest
-MAINTAINER WangYan <i@wangyan.org>
+LABEL authors="WangYan <i@wangyan.org>"
 
 # Setup Nginx
-RUN curl -O "http://nginx.org/keys/nginx_signing.key" && \
+RUN set -xe && \
+    apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y curl wget unzip git net-tools ca-certificates --no-install-recommends && \
+    curl -O "http://nginx.org/keys/nginx_signing.key" && \
     apt-key add nginx_signing.key && \
+    rm -f nginx_signing.key && \
     echo "deb http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list && \
     echo "deb-src http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get install -y apt-utils nginx && \
+    apt-get install --no-install-recommends --no-install-suggests -y ca-certificates nginx && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak && \
-    rm -Rf /etc/nginx/conf.d/*
+    mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
 
-# APT Clean
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* ./nginx_signing.key
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/hexo.conf /etc/nginx/conf.d/hexo.conf
 
-# Nginx config
-COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY ./nginx/hexo.conf /etc/nginx/conf.d/hexo.conf
-
-# Runit Config
-RUN mkdir -p /etc/service/nginx/log/
-COPY ./runit/nginx.sh /etc/service/nginx/run
-COPY ./runit/nginx_log.sh /etc/service/nginx/log/run
+# Nginx Runit
+RUN mkdir -p /etc/service/nginx && \
+    echo '#!/bin/sh' >> /etc/service/nginx/run && \
+    echo 'exec 2>&1' >> /etc/service/nginx/run && \
+    echo 'exec nginx -g "daemon off;"' >> /etc/service/nginx/run && \
+    chmod +x /etc/service/nginx/run
 
 # Hexo config
 RUN mkdir -p /opt/hexo /var/lib/hexo
@@ -33,8 +37,7 @@ COPY ./deploy/index.js /var/lib/hexo/index.js
 COPY ./deploy/deploy.sh /var/lib/hexo/deploy.sh
 COPY ./entrypoint.sh /entrypoint.sh
 
-RUN chmod +x /etc/service/nginx/run /etc/service/nginx/log/run \
-             /var/lib/hexo/deploy.sh /entrypoint.sh
+RUN chmod +x /etc/service/nginx/run /var/lib/hexo/deploy.sh /entrypoint.sh
 
 # Expose Ports
 EXPOSE 80

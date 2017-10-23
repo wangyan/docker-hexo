@@ -5,18 +5,12 @@ set -x
 if [ "$APT_MIRRORS" = "aliyun" ];then
     sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
     npm  config set registry https://registry.npm.taobao.org
-fi
-
-# Yarn
-npm install -g yarn
-if [ "$APT_MIRRORS" = "aliyun" ];then
     yarn config set registry https://registry.npm.taobao.org
-    npm upgrade --global yarn
 fi
 
 # Hexo && PM2
+yarn global add yarn
 yarn global add hexo-cli pm2
-cd /opt/hexo
 [ ! -f "/opt/hexo/_config.yml" ] && hexo init .
 [ ! -f "/opt/hexo/deploy.sh" ] && cp /var/lib/hexo/deploy.sh /opt/hexo
 yarn install
