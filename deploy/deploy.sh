@@ -1,4 +1,5 @@
 #!/bin/bash
+set -xe
 
 POSTS_PATH='/opt/hexo/source/_posts'
 

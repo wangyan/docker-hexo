@@ -1,5 +1,5 @@
 #!/bin/bash
-set -x
+set -xe
 
 # Aliyun
 if [ "$APT_MIRRORS" = "aliyun" ];then
@@ -9,11 +9,13 @@ if [ "$APT_MIRRORS" = "aliyun" ];then
 fi
 
 # Hexo && PM2
-yarn global add yarn
-yarn global add hexo-cli pm2
-[ ! -f "/opt/hexo/_config.yml" ] && hexo init .
+if [ ! -f "/opt/hexo/_config.yml" ];then
+    yarn global add yarn
+    yarn global add hexo-cli pm2
+    hexo init .
+    yarn install
+fi
 [ ! -f "/opt/hexo/deploy.sh" ] && cp /var/lib/hexo/deploy.sh /opt/hexo
-yarn install
 hexo clean
 hexo g
 

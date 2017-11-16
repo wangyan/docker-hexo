@@ -1,6 +1,6 @@
 # docker-hexo
 
-基于 `Ubuntu 16.04`、NodeJs: `v6.x`、Nginx `1.10.x` 构建，一键自动安装最新版的 `Hexo`，使用Nginx作为web服务器，支持Git自动发布。
+基于 `Ubuntu 16.04`、NodeJs: `v8.x`、Nginx `1.10.x` 构建，一键自动安装最新版的 `Hexo`，使用Nginx作为web服务器，支持Git自动发布。
 
 ## 一、流程简介
 
@@ -45,7 +45,7 @@ systemctl start docker.service
 
 
 ```shell
-docker run --name hexo \
+docker run --restart=always --name hexo \
 -v /opt/hexo:/opt/hexo \
 -p 80:80 \
 -p 443:443 \
@@ -56,12 +56,12 @@ docker run --name hexo \
 ```
 
 ```shell
-docker run --name hexo \
+docker run --restart=always --name hexo \
 -v /opt/hexo:/opt/hexo \
 -p 80:80 \
 -p 443:443 \
 -e IP_OR_DOMAIN=wangyan.org \
--e GITLAB=https://wang_yan:123456@gitlab.com/wang_yan/hexo.git \
+-e GITLAB=https://username:password@gitlab.com/wang_yan/hexo.git \
 -e WEBHOOK_SECRET=123456 \
 -d idiswy/hexo:latest
 ```
