@@ -1,0 +1,14 @@
+web:
+  container_name: 'hexo'
+  image: 'idiswy/hexo:latest'
+  restart: always
+  environment:
+    - IP_OR_DOMAIN=wangyan.org
+    - GITLAB=https://username:password@RepoURL
+    - WEBHOOK_SECRET=password
+    - APT_MIRRORS=aliyun
+  ports:
+    - '80:80'
+    - '443:443'
+  volumes:
+    - '/opt/hexo:/opt/hexo'
