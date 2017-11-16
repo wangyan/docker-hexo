@@ -13,8 +13,6 @@ RUN set -xe && \
     echo "deb-src http://nginx.org/packages/ubuntu/ xenial nginx" >> /etc/apt/sources.list && \
     apt-get update && \
     apt-get install --no-install-recommends --no-install-suggests -y ca-certificates nginx && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
     mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bak && \
     mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.bak
 
@@ -29,8 +27,21 @@ RUN mkdir -p /etc/service/nginx && \
     echo 'exec nginx -g "daemon off;"' >> /etc/service/nginx/run && \
     chmod +x /etc/service/nginx/run
 
-# Hexo config
-RUN mkdir -p /opt/hexo /var/lib/hexo
+# Yarn upgrade
+RUN set -xe && \
+    apt-get install -y --only-upgrade yarn && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Setup Hexo
+RUN set -xe && \
+    yarn global add hexo-cli && \
+    yarn global add pm2 && \
+    mkdir -p /opt/hexo /var/lib/hexo && \
+    cd /opt/hexo && \
+    hexo init . && \
+    yarn install
+
 WORKDIR /opt/hexo
 
 COPY ./deploy/index.js /var/lib/hexo/index.js
