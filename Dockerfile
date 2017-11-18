@@ -1,4 +1,4 @@
-FROM idiswy/node:latest
+FROM idiswy/node:0.4
 LABEL authors="WangYan <i@wangyan.org>"
 
 # Setup Nginx

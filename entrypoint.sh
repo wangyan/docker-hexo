@@ -45,12 +45,13 @@ if [ ! -f "/opt/hexo/index.js" ];then
 		pm2 start index.js --name hexo
 		/opt/hexo/deploy.sh
 	fi
-
-	# Nginx
-	[ -z $IP_OR_DOMAIN ] && IP_OR_DOMAIN=$(hostname -i)
-	sed -i "s/IP_OR_DOMAIN/$IP_OR_DOMAIN/" /etc/nginx/conf.d/hexo.conf
 else
+	pm2 start index.js --name hexo
 	hexo clean && hexo g
 fi
+
+# Nginx
+[ -z $IP_OR_DOMAIN ] && IP_OR_DOMAIN=$(hostname -i)
+sed -i "s/IP_OR_DOMAIN/$IP_OR_DOMAIN/" /etc/nginx/conf.d/hexo.conf
 
 exec "$@"
